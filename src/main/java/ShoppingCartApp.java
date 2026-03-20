@@ -11,6 +11,7 @@ public class ShoppingCartApp {
         System.out.println("1. English");
         System.out.println("2. Finnish");
         System.out.println("3. Swedish");
+        System.out.println("4. Japanese");
         System.out.print("Enter choice: ");
 
         int choice = input.nextInt();
@@ -22,6 +23,9 @@ public class ShoppingCartApp {
                 break;
             case 3:
                 locale = new Locale("sv", "SE");
+                break;
+            case 4:
+                locale = new Locale("ja", "JP");
                 break;
             case 1:
             default:
@@ -37,7 +41,6 @@ public class ShoppingCartApp {
         double cartTotal = 0.0;
 
         for (int i = 1; i <= itemCount; i++) {
-            System.out.println(rb.getString("item") + " " + i);
 
             System.out.print(rb.getString("price"));
             double price = input.nextDouble();
@@ -48,7 +51,9 @@ public class ShoppingCartApp {
             double itemTotal = calculateItemTotal(price, quantity);
             cartTotal += itemTotal;
 
-            System.out.println(rb.getString("itemTotal") + " " + itemTotal);
+
+
+
         }
 
         System.out.println(rb.getString("cartTotal") + " " + cartTotal);
