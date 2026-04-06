@@ -3,14 +3,14 @@ pipeline {
 
     environment {
         DOCKERHUB_CREDENTIALS_ID = 'Docker_Hub'
-        DOCKERHUB_REPO = 'hathadura/shoppingcart_assignment2'
+        DOCKERHUB_REPO = 'hathadura/shoppingcart_part3_database_localization'
         DOCKER_IMAGE_TAG = 'latest'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/HChathurika/shopping-cart-assignment-part2.git'
+                git branch: 'main', url: 'https://github.com/HChathurika/shopping-cart-_part3_localization.git'
             }
         }
 
