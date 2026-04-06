@@ -1,7 +1,8 @@
 package org.example;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class ShoppingCartApp {
@@ -18,45 +19,53 @@ public class ShoppingCartApp {
         System.out.print("Enter choice: ");
 
         int choice = input.nextInt();
-        Locale locale;
+        String language;
 
         switch (choice) {
             case 2:
-                locale = new Locale("fi", "FI");
+                language = "fi";
                 break;
             case 3:
-                locale = new Locale("sv", "SE");
+                language = "sv";
                 break;
             case 4:
-                locale = new Locale("ja", "JP");
+                language = "ja";
                 break;
             case 5:
-                locale = new Locale("ar", "AR");
+                language = "ar";
                 break;
             default:
-                locale = new Locale("en", "US");
+                language = "en";
                 break;
         }
 
-        ResourceBundle rb = ResourceBundle.getBundle("MessagesBundle", locale);
+        LocalizationService localizationService = new LocalizationService();
+        Map<String, String> strings = localizationService.getStrings(language);
 
-        System.out.print(rb.getString("itemCount") + ": ");
+        System.out.print(strings.get("itemCount") + ": ");
         int itemCount = input.nextInt();
 
         double cartTotal = 0.0;
+        List<CartItem> items = new ArrayList<>();
 
         for (int i = 1; i <= itemCount; i++) {
-            System.out.print(rb.getString("price") + " " + i + ": ");
+            System.out.print(strings.get("price") + " " + i + ": ");
             double price = input.nextDouble();
 
-            System.out.print(rb.getString("quantity") + " " + i + ": ");
+            System.out.print(strings.get("quantity") + " " + i + ": ");
             int quantity = input.nextInt();
 
-            double itemTotal = ShoppingCartCalculator.calculateItemTotal(price, quantity);
-            cartTotal += itemTotal;
+            double subtotal = ShoppingCartCalculator.calculateItemTotal(price, quantity);
+            cartTotal += subtotal;
+
+            items.add(new CartItem(i, price, quantity, subtotal));
         }
 
-        System.out.println(rb.getString("cartTotal") + ": " + cartTotal);
+        System.out.println(strings.get("cartTotal") + ": " + cartTotal);
+
+        CartService cartService = new CartService();
+        cartService.saveCart(itemCount, cartTotal, language, items);
+
         input.close();
     }
 }
