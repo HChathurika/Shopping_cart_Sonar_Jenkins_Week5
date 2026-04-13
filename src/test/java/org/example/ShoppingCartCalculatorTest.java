@@ -4,41 +4,53 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ShoppingCartCalculatorTest {
+class ShoppingCartCalculatorTest {
 
     @Test
-    void testCalculateItemTotal() {
-        assertEquals(50.0, ShoppingCartCalculator.calculateItemTotal(10.0, 5), 0.001);
+    void calculateItemTotalShouldReturnCorrectValue() {
+        double result = ShoppingCartCalculator.calculateItemTotal(100.0, 3);
+        assertEquals(300.0, result);
     }
 
     @Test
-    void testCalculateItemTotalWithDecimal() {
-        assertEquals(22.5, ShoppingCartCalculator.calculateItemTotal(7.5, 3), 0.001);
+    void calculateItemTotalShouldReturnZeroWhenQuantityIsZero() {
+        double result = ShoppingCartCalculator.calculateItemTotal(100.0, 0);
+        assertEquals(0.0, result);
     }
 
     @Test
-    void testCalculateItemTotalWithZeroQuantity() {
-        assertEquals(0.0, ShoppingCartCalculator.calculateItemTotal(10.0, 0), 0.001);
+    void calculateItemTotalShouldReturnZeroWhenPriceIsZero() {
+        double result = ShoppingCartCalculator.calculateItemTotal(0.0, 5);
+        assertEquals(0.0, result);
     }
 
     @Test
-    void testCalculateCartTotal() {
-        double[] prices = {10.0, 20.0, 5.0};
-        int[] quantities = {2, 1, 4};
-        assertEquals(60.0, ShoppingCartCalculator.calculateCartTotal(prices, quantities), 0.001);
+    void calculateCartTotalShouldReturnCorrectSumForMultipleItems() {
+        double[] prices = {100.0, 50.0, 25.0};
+        int[] quantities = {2, 3, 4};
+
+        double result = ShoppingCartCalculator.calculateCartTotal(prices, quantities);
+
+        assertEquals(450.0, result);
     }
 
     @Test
-    void testCalculateCartTotalSingleItem() {
-        double[] prices = {15.0};
+    void calculateCartTotalShouldReturnZeroForEmptyArrays() {
+        double[] prices = {};
+        int[] quantities = {};
+
+        double result = ShoppingCartCalculator.calculateCartTotal(prices, quantities);
+
+        assertEquals(0.0, result);
+    }
+
+    @Test
+    void calculateCartTotalShouldWorkForSingleItem() {
+        double[] prices = {199.99};
         int[] quantities = {2};
-        assertEquals(30.0, ShoppingCartCalculator.calculateCartTotal(prices, quantities), 0.001);
-    }
 
-    @Test
-    void testCalculateCartTotalWithZeroValues() {
-        double[] prices = {0.0, 10.0};
-        int[] quantities = {5, 0};
-        assertEquals(0.0, ShoppingCartCalculator.calculateCartTotal(prices, quantities), 0.001);
+        double result = ShoppingCartCalculator.calculateCartTotal(prices, quantities);
+
+        assertEquals(399.98, result);
     }
 }

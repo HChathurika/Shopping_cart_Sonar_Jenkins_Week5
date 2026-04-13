@@ -20,7 +20,7 @@ import java.util.ResourceBundle;
 public class Main extends Application {
 
     private ResourceBundle rb;
-    private Locale currentLocale = new Locale("en", "US");
+    private Locale currentLocale = Locale.forLanguageTag("en-US");
 
     private Label languageLabel;
     private ComboBox<String> languageComboBox;
@@ -63,19 +63,19 @@ public class Main extends Application {
 
             switch (selected) {
                 case "Finnish":
-                    currentLocale = new Locale("fi", "FI");
+                    currentLocale = Locale.forLanguageTag("fi-FI");
                     break;
                 case "Swedish":
-                    currentLocale = new Locale("sv", "SE");
+                    currentLocale = Locale.forLanguageTag("sv-SE");
                     break;
                 case "Japanese":
-                    currentLocale = new Locale("ja", "JP");
+                    currentLocale = Locale.forLanguageTag("ja-JP");
                     break;
                 case "Arabic":
-                    currentLocale = new Locale("ar", "AR");
+                    currentLocale = Locale.forLanguageTag("ar-AR");
                     break;
                 default:
-                    currentLocale = new Locale("en", "US");
+                    currentLocale = Locale.forLanguageTag("en-US");
                     break;
             }
 
@@ -87,7 +87,8 @@ public class Main extends Application {
         generateButton.setOnAction(e -> regenerateItemFields());
         calculateButton.setOnAction(e -> calculateTotal());
 
-        VBox content = new VBox(12,
+        VBox content = new VBox(
+                12,
                 languageLabel,
                 languageComboBox,
                 itemCountLabel,
