@@ -1,0 +1,6 @@
+projectKey=Shopping_cart
+serverUrl=http://localhost:9000
+serverVersion=26.3.0.120487
+dashboardUrl=http://localhost:9000/dashboard?id=Shopping_cart
+ceTaskId=8337210e-bcc7-4641-bb4e-84b6bc3ca083
+ceTaskUrl=http://localhost:9000/api/ce/task?id=8337210e-bcc7-4641-bb4e-84b6bc3ca083

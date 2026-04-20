@@ -1,34 +1,30 @@
 pipeline {
     agent any
 
+    tools {
+        maven 'Maven3'
+    }
+
     environment {
+        PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
+        JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'
+        SONARQUBE_SERVER = 'SonarQubeServer'
+        SONAR_TOKEN = credentials('SONAR_TOKEN')
         DOCKERHUB_CREDENTIALS_ID = 'Docker_Hub'
-        DOCKERHUB_REPO = 'hathadura/shoppingcart_part3_database_localization'
+        DOCKERHUB_REPO = 'hathadura/shopping_cart_jenkins_sonarqube_week5'
         DOCKER_IMAGE_TAG = 'latest'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/HChathurika/shopping-cart-_part3_localization.git'
+                git branch: 'main', url: 'https://github.com/HChathurika/Shopping_cart_Sonar_Jenkins_Week5.git'
             }
         }
 
-        stage('Build') {
+        stage('Build and Test') {
             steps {
-                bat 'mvn clean compile'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                bat 'mvn test'
-            }
-        }
-
-        stage('Generate JaCoCo Report') {
-            steps {
-                bat 'mvn jacoco:report'
+                bat 'mvn clean verify'
             }
         }
 
@@ -41,6 +37,23 @@ pipeline {
         stage('Publish Coverage Report') {
             steps {
                 jacoco()
+            }
+        }
+
+        stage('SonarQube Analysis') {
+            steps {
+                withSonarQubeEnv('SonarQubeServer') {
+                    bat """
+                    ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
+                    -Dsonar.projectKey=Shopping_cart ^
+                    -Dsonar.projectName=shopping-cart ^
+                    -Dsonar.sources=src/main/java ^
+                    -Dsonar.tests=src/test/java ^
+                    -Dsonar.host.url=http://localhost:9000 ^
+                    -Dsonar.login=%SONAR_TOKEN% ^
+                    -Dsonar.java.binaries=target/classes
+                    """
+                }
             }
         }
 
