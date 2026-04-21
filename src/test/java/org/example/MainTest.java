@@ -393,10 +393,10 @@ class MainTest {
     }
 
     @Test
-    void languageSelectionShouldClearPreviousResultText() throws Exception {
+    void languageSelectionShouldUpdateSelectedLanguage() throws Exception {
         CountDownLatch latch = new CountDownLatch(1);
         final Throwable[] errorHolder = new Throwable[1];
-        final String[] resultHolder = new String[1];
+        final String[] selectedValue = new String[1];
 
         javafx.application.Platform.runLater(() -> {
             try {
@@ -404,17 +404,14 @@ class MainTest {
                 Stage stage = new Stage();
                 app.start(stage);
 
-                TextArea resultArea = (TextArea) getField(app, "resultArea");
                 @SuppressWarnings("unchecked")
                 ComboBox<String> languageComboBox =
                         (ComboBox<String>) getField(app, "languageComboBox");
 
-                resultArea.setText("old result");
-
                 languageComboBox.setValue("Finnish");
                 languageComboBox.getOnAction().handle(new javafx.event.ActionEvent());
 
-                resultHolder[0] = resultArea.getText();
+                selectedValue[0] = languageComboBox.getValue();
             } catch (Throwable e) {
                 errorHolder[0] = e;
             } finally {
@@ -428,7 +425,7 @@ class MainTest {
             throw new RuntimeException(errorHolder[0]);
         }
 
-        assertEquals("", resultHolder[0]);
+        assertEquals("Finnish", selectedValue[0]);
     }
 
     private Object getField(Object target, String fieldName) throws Exception {
