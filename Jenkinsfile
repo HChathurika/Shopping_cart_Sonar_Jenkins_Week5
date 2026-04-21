@@ -8,7 +8,7 @@ pipeline {
         PATH = "C:\\Program Files\\Docker\\Docker\\resources\\bin;${env.PATH}"
         JAVA_HOME = 'C:\\Program Files\\Java\\jdk-21'
         SONARQUBE_SERVER = 'SonarQubeServer'
-        SONAR_TOKEN = 'YOUR_TOKEN'
+        SONAR_TOKEN = 'squ_3427581372949391a5286d4988eca46ddd10e5e6'
         DOCKERHUB_CREDENTIALS_ID = 'Docker_Hub'
         DOCKERHUB_REPO = 'hathadura/shopping_cart_jenkins_sonarqube_week5'
         DOCKER_IMAGE_TAG = 'latest'
