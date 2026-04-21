@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
@@ -44,37 +45,87 @@ class ShoppingCartAppTest {
 
     @Test
     void runShouldCalculateTotalAndSaveCartForEnglish() {
-        TestContext ctx = createContext(
-                "1\n2\n100.0\n2\n50.0\n3\n",
-                "en",
-                defaultStrings("Item count", "Price", "Quantity", "Cart total")
-        );
+        String simulatedInput = "1\n2\n100.0\n2\n50.0\n3\n";
+        Scanner scanner = new Scanner(simulatedInput);
 
-        ShoppingCartApp.run(ctx.scanner, ctx.out, ctx.localizationService, ctx.cartService);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outputStream);
 
-        verify(ctx.localizationService).getStrings("en");
-        verify(ctx.cartService).saveCart(eq(2), eq(350.0), eq("en"), anyList());
+        LocalizationService localizationService = mock(LocalizationService.class);
+        CartService cartService = mock(CartService.class);
 
-        String output = ctx.outputStream.toString();
+        Map<String, String> strings = new HashMap<>();
+        strings.put("itemCount", "Item count");
+        strings.put("price", "Price");
+        strings.put("quantity", "Quantity");
+        strings.put("cartTotal", "Cart total");
+
+        when(localizationService.getStrings("en")).thenReturn(strings);
+
+        ShoppingCartApp.run(scanner, out, localizationService, cartService);
+
+        verify(localizationService).getStrings("en");
+        verify(cartService).saveCart(eq(2), eq(350.0), eq("en"), anyList());
+
+        String output = outputStream.toString();
         assertTrue(output.contains("Select language:"));
         assertTrue(output.contains("Enter choice:"));
         assertTrue(output.contains("Cart total: 350.0"));
     }
 
     @Test
-    void runShouldSaveCorrectItems() {
-        TestContext ctx = createContext(
-                "1\n2\n10.0\n2\n5.0\n4\n",
-                "en",
-                defaultStrings("Item count", "Price", "Quantity", "Cart total")
-        );
+    void runShouldHandleArabicLanguage() {
+        String simulatedInput = "5\n1\n20.0\n2\n";
+        Scanner scanner = new Scanner(simulatedInput);
 
-        ShoppingCartApp.run(ctx.scanner, ctx.out, ctx.localizationService, ctx.cartService);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outputStream);
+
+        LocalizationService localizationService = mock(LocalizationService.class);
+        CartService cartService = mock(CartService.class);
+
+        Map<String, String> strings = new HashMap<>();
+        strings.put("itemCount", "عدد العناصر");
+        strings.put("price", "السعر");
+        strings.put("quantity", "الكمية");
+        strings.put("cartTotal", "المجموع");
+
+        when(localizationService.getStrings("ar")).thenReturn(strings);
+
+        ShoppingCartApp.run(scanner, out, localizationService, cartService);
+
+        verify(localizationService).getStrings("ar");
+        verify(cartService).saveCart(eq(1), eq(40.0), eq("ar"), anyList());
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("المجموع: 40.0"));
+    }
+
+    @Test
+    void runShouldSaveCorrectItems() {
+        String simulatedInput = "1\n2\n10.0\n2\n5.0\n4\n";
+        Scanner scanner = new Scanner(simulatedInput);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outputStream);
+
+        LocalizationService localizationService = mock(LocalizationService.class);
+        CartService cartService = mock(CartService.class);
+
+        Map<String, String> strings = new HashMap<>();
+        strings.put("itemCount", "Item count");
+        strings.put("price", "Price");
+        strings.put("quantity", "Quantity");
+        strings.put("cartTotal", "Cart total");
+
+        when(localizationService.getStrings("en")).thenReturn(strings);
+
+        ShoppingCartApp.run(scanner, out, localizationService, cartService);
 
         @SuppressWarnings("unchecked")
         ArgumentCaptor<List<CartItem>> itemsCaptor = ArgumentCaptor.forClass(List.class);
 
-        verify(ctx.cartService).saveCart(eq(2), eq(40.0), eq("en"), itemsCaptor.capture());
+        verify(cartService).saveCart(eq(2), eq(40.0), eq("en"), itemsCaptor.capture());
 
         List<CartItem> items = itemsCaptor.getValue();
         assertEquals(2, items.size());
@@ -91,65 +142,30 @@ class ShoppingCartAppTest {
     }
 
     @Test
-    void runShouldHandleArabic() {
-        TestContext ctx = createContext(
-                "5\n1\n20.0\n2\n",
-                "ar",
-                defaultStrings("عدد العناصر", "السعر", "الكمية", "المجموع")
-        );
-
-        ShoppingCartApp.run(ctx.scanner, ctx.out, ctx.localizationService, ctx.cartService);
-
-        verify(ctx.localizationService).getStrings("ar");
-        verify(ctx.cartService).saveCart(eq(1), eq(40.0), eq("ar"), anyList());
-
-        String output = ctx.outputStream.toString();
-        assertTrue(output.contains("المجموع: 40.0"));
-    }
-
-    @Test
     void runShouldHandleZeroItems() {
-        TestContext ctx = createContext(
-                "1\n0\n",
-                "en",
-                defaultStrings("Item count", "Price", "Quantity", "Cart total")
-        );
+        String simulatedInput = "1\n0\n";
+        Scanner scanner = new Scanner(simulatedInput);
 
-        ShoppingCartApp.run(ctx.scanner, ctx.out, ctx.localizationService, ctx.cartService);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outputStream);
 
-        verify(ctx.localizationService).getStrings("en");
-        verify(ctx.cartService).saveCart(eq(0), eq(0.0), eq("en"), anyList());
+        LocalizationService localizationService = mock(LocalizationService.class);
+        CartService cartService = mock(CartService.class);
 
-        String output = ctx.outputStream.toString();
-        assertTrue(output.contains("Cart total: 0.0"));
-    }
-
-    private TestContext createContext(String input, String language, Map<String, String> strings) {
-        TestContext ctx = new TestContext();
-        ctx.scanner = new Scanner(input);
-        ctx.outputStream = new ByteArrayOutputStream();
-        ctx.out = new PrintStream(ctx.outputStream);
-        ctx.localizationService = mock(LocalizationService.class);
-        ctx.cartService = mock(CartService.class);
-
-        when(ctx.localizationService.getStrings(language)).thenReturn(strings);
-        return ctx;
-    }
-
-    private Map<String, String> defaultStrings(String itemCount, String price, String quantity, String cartTotal) {
         Map<String, String> strings = new HashMap<>();
-        strings.put("itemCount", itemCount);
-        strings.put("price", price);
-        strings.put("quantity", quantity);
-        strings.put("cartTotal", cartTotal);
-        return strings;
-    }
+        strings.put("itemCount", "Item count");
+        strings.put("price", "Price");
+        strings.put("quantity", "Quantity");
+        strings.put("cartTotal", "Cart total");
 
-    private static class TestContext {
-        Scanner scanner;
-        ByteArrayOutputStream outputStream;
-        PrintStream out;
-        LocalizationService localizationService;
-        CartService cartService;
+        when(localizationService.getStrings("en")).thenReturn(strings);
+
+        ShoppingCartApp.run(scanner, out, localizationService, cartService);
+
+        verify(localizationService).getStrings("en");
+        verify(cartService).saveCart(eq(0), eq(0.0), eq("en"), anyList());
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Cart total: 0.0"));
     }
 }
