@@ -34,7 +34,8 @@ pipeline {
                     ${tool 'SonarScanner'}\\bin\\sonar-scanner ^
                     -Dsonar.projectKey=shopping-cart ^
                     -Dsonar.projectName=shopping-cart ^
-                    -Dsonar.sources=src ^
+                    -Dsonar.sources=src/main/java ^
+                    -Dsonar.tests=src/test/java ^
                     -Dsonar.host.url=http://localhost:9000 ^
                     -Dsonar.token=${env.SONAR_TOKEN} ^
                     -Dsonar.java.binaries=target/classes
