@@ -53,4 +53,20 @@ class ShoppingCartCalculatorTest {
 
         assertEquals(399.98, result);
     }
+
+    @Test
+    void calculateItemTotalShouldWorkWithNegativePrice() {
+        double result = ShoppingCartCalculator.calculateItemTotal(-10.0, 2);
+        assertEquals(-20.0, result);
+    }
+
+    @Test
+    void calculateCartTotalShouldWorkWithZeroAndNegativeValues() {
+        double[] prices = {10.0, 0.0, -5.0};
+        int[] quantities = {2, 3, 4};
+
+        double result = ShoppingCartCalculator.calculateCartTotal(prices, quantities);
+
+        assertEquals(0.0, result);
+    }
 }

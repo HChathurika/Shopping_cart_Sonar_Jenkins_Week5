@@ -363,6 +363,74 @@ class MainTest {
         assertTrue(resultText[0].contains("35"));
     }
 
+    @Test
+    void updateTextsShouldChangeStageTitle() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final Throwable[] errorHolder = new Throwable[1];
+        final String[] titleHolder = new String[1];
+
+        javafx.application.Platform.runLater(() -> {
+            try {
+                Main app = new Main();
+                Stage stage = new Stage();
+                app.start(stage);
+                titleHolder[0] = stage.getTitle();
+            } catch (Throwable e) {
+                errorHolder[0] = e;
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+
+        if (errorHolder[0] != null) {
+            throw new RuntimeException(errorHolder[0]);
+        }
+
+        assertNotNull(titleHolder[0]);
+        assertFalse(titleHolder[0].isEmpty());
+    }
+
+    @Test
+    void languageSelectionShouldClearPreviousResultText() throws Exception {
+        CountDownLatch latch = new CountDownLatch(1);
+        final Throwable[] errorHolder = new Throwable[1];
+        final String[] resultHolder = new String[1];
+
+        javafx.application.Platform.runLater(() -> {
+            try {
+                Main app = new Main();
+                Stage stage = new Stage();
+                app.start(stage);
+
+                TextArea resultArea = (TextArea) getField(app, "resultArea");
+                @SuppressWarnings("unchecked")
+                ComboBox<String> languageComboBox =
+                        (ComboBox<String>) getField(app, "languageComboBox");
+
+                resultArea.setText("old result");
+
+                languageComboBox.setValue("Finnish");
+                languageComboBox.getOnAction().handle(new javafx.event.ActionEvent());
+
+                resultHolder[0] = resultArea.getText();
+            } catch (Throwable e) {
+                errorHolder[0] = e;
+            } finally {
+                latch.countDown();
+            }
+        });
+
+        latch.await(10, TimeUnit.SECONDS);
+
+        if (errorHolder[0] != null) {
+            throw new RuntimeException(errorHolder[0]);
+        }
+
+        assertEquals("", resultHolder[0]);
+    }
+
     private Object getField(Object target, String fieldName) throws Exception {
         var field = target.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
