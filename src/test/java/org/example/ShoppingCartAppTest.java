@@ -259,4 +259,32 @@ class ShoppingCartAppTest {
         assertEquals(4, items.get(1).getQuantity());
         assertEquals(20.0, items.get(1).getSubtotal());
     }
+
+    @Test
+    void runShouldPrintPromptsForEachItem() {
+        String simulatedInput = "1\n2\n10.0\n1\n20.0\n2\n";
+        Scanner scanner = new Scanner(simulatedInput);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream out = new PrintStream(outputStream);
+
+        LocalizationService localizationService = mock(LocalizationService.class);
+        CartService cartService = mock(CartService.class);
+
+        Map<String, String> strings = new HashMap<>();
+        strings.put("itemCount", "Item count");
+        strings.put("price", "Price");
+        strings.put("quantity", "Quantity");
+        strings.put("cartTotal", "Cart total");
+
+        when(localizationService.getStrings("en")).thenReturn(strings);
+
+        ShoppingCartApp.run(scanner, out, localizationService, cartService);
+
+        String output = outputStream.toString();
+        assertTrue(output.contains("Price 1:"));
+        assertTrue(output.contains("Quantity 1:"));
+        assertTrue(output.contains("Price 2:"));
+        assertTrue(output.contains("Quantity 2:"));
+    }
 }
